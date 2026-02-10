@@ -1,7 +1,7 @@
 # Mangayomi Extensions
 Extensions for Mangayomi
 
-
+Manga Repo
 ```Manga repo
 https://raw.githubusercontent.com/slaerez/mangayomi-slaerez/refs/heads/main/index.json
 ```
