@@ -4,7 +4,7 @@ const mangayomiSources = [{
     "lang": "en",
     "baseUrl": "https://atsu.moe",
     "apiUrl": "",
-    "iconUrl": "https://raw.githubusercontent.com/slaerez/myext/main/javascript/icon/en.atsumaru.png",
+    "iconUrl": "https://raw.githubusercontent.com/slaerez/mangayomi-slaerez/main/javascript/icon/en.atsumaru.png",
     "typeSource": "single",
     "itemType": 0,
     "isNsfw": true,
