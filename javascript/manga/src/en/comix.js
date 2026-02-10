@@ -4,7 +4,7 @@ const mangayomiSources = [{
     "lang": "en",
     "baseUrl": "https://comix.to",
     "apiUrl": "https://comix.to/api/v2/",
-    "iconUrl": "https://raw.githubusercontent.com/slaerez/myext/main/javascript/icon/en.comix.png",
+    "iconUrl": "https://raw.githubusercontent.com/slaerez/mangayomi-slaerez/main/javascript/icon/en.comix.png",
     "typeSource": "single",
     "itemType": 0,
     "isNsfw": true,
@@ -707,3 +707,4 @@ if (chapterTitle) name += `: ${chapterTitle}`;
         throw new Error("getSourcePreferences not implemented");
     }
 }
+
