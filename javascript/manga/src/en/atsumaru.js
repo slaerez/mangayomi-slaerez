@@ -8,7 +8,7 @@ const mangayomiSources = [{
     "typeSource": "single",
     "itemType": 0,
     "isNsfw": true,
-    "version": "0.0.1",
+    "version": "0.0.2",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "manga/src/en/atsumaru.js",
@@ -89,7 +89,7 @@ class DefaultExtension extends MProvider {
       if (id && title) {
         list.push({
           name: String(title).trim(),
-          link: String(id),
+          link: `/manga/${id}`,
           imageUrl,
         });
       }
@@ -160,7 +160,7 @@ class DefaultExtension extends MProvider {
       if (id && title) {
         list.push({
           name: String(title).trim(),
-          link: String(id),
+          link: `/manga/${id}`,
           imageUrl,
         });
       }
@@ -273,7 +273,7 @@ class DefaultExtension extends MProvider {
               : `${baseUrl}/static/${String(raw).replace(/^\/+/, "").replace(/^static\//, "")}`)
           : null;
 
-        list.push({ name: String(title).trim(), link: String(id), imageUrl });
+        list.push({ name: String(title).trim(), link: `/manga/${id}`, imageUrl });
       }
 
       return { list, hasNextPage: true };
@@ -320,7 +320,7 @@ class DefaultExtension extends MProvider {
             : `${baseUrl}/static/${String(rawPoster).replace(/^\/+/, "").replace(/^static\//, "")}`)
         : null;
 
-      list.push({ name: String(title).trim(), link: String(id), imageUrl });
+      list.push({ name: String(title).trim(), link: `/manga/${id}`, imageUrl });
     }
 
     return { list, hasNextPage: currentPage * perPage < found };
