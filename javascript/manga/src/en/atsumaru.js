@@ -8,7 +8,7 @@ const mangayomiSources = [{
     "typeSource": "single",
     "itemType": 0,
     "isNsfw": true,
-    "version": "0.0.2",
+    "version": "0.0.3",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "manga/src/en/atsumaru.js",
@@ -480,7 +480,7 @@ class DefaultExtension extends MProvider {
         if (cid && name) {
           chapters.push({
             name,
-            url: `${mangaId}/${cid}`,
+            url: `/read/${mangaId}/${cid}`,
             dateUpload,
             chapterNumber: typeof num === "number" ? num : undefined,
           });
@@ -505,7 +505,7 @@ class DefaultExtension extends MProvider {
     };
   }
 
-  async getPageList(url) {
+    async getPageList(url) {
     const baseUrl = this.getBaseUrl();
 
     const s = String(url || "").trim();
@@ -514,15 +514,21 @@ class DefaultExtension extends MProvider {
     let mangaId = null;
     let chapterId = null;
 
-    if (s.includes("/") && !/^https?:\/\//i.test(s)) {
+    const readMatch = s.match(/\/read\/([^/]+)\/([^/?#]+)/i);
+    if (readMatch) {
+      mangaId = readMatch[1];
+      chapterId = readMatch[2];
+    } else if (!/^https?:\/\//i.test(s) && s.includes("/")) {
+      
       const parts = s.split("/").filter(Boolean);
       mangaId = parts[0] || null;
       chapterId = parts[1] || null;
     } else {
-      const m = s.match(/\/read\/([^/]+)\/([^/?#]+)/i);
-      if (m) {
-        mangaId = m[1];
-        chapterId = m[2];
+      
+      const full = s.match(/\/read\/([^/]+)\/([^/?#]+)/i);
+      if (full) {
+        mangaId = full[1];
+        chapterId = full[2];
       }
     }
 
@@ -558,6 +564,7 @@ class DefaultExtension extends MProvider {
       .map(p => p?.image ? (baseUrl + String(p.image)) : null)
       .filter(Boolean);
   }
+
 
   getFilterList() {
     return [
