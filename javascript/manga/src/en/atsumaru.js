@@ -506,64 +506,79 @@ class DefaultExtension extends MProvider {
   }
 
     async getPageList(url) {
-    const baseUrl = this.getBaseUrl();
+  const baseUrl = this.getBaseUrl();
 
-    const s = String(url || "").trim();
-    if (!s) throw new Error("Invalid chapter url: " + url);
+  const s = String(url || "").trim();
+  if (!s) throw new Error("Invalid chapter url: " + url);
 
-    let mangaId = null;
-    let chapterId = null;
+  let mangaId = null;
+  let chapterId = null;
 
-    const readMatch = s.match(/\/read\/([^/]+)\/([^/?#]+)/i);
-    if (readMatch) {
-      mangaId = readMatch[1];
-      chapterId = readMatch[2];
-    } else if (!/^https?:\/\//i.test(s) && s.includes("/")) {
-      
-      const parts = s.split("/").filter(Boolean);
-      mangaId = parts[0] || null;
-      chapterId = parts[1] || null;
-    } else {
-      
-      const full = s.match(/\/read\/([^/]+)\/([^/?#]+)/i);
-      if (full) {
-        mangaId = full[1];
-        chapterId = full[2];
-      }
+  const readMatch = s.match(/\/read\/([^/]+)\/([^/?#]+)/i);
+  if (readMatch) {
+    mangaId = readMatch[1];
+    chapterId = readMatch[2];
+  } else if (!/^https?:\/\//i.test(s) && s.includes("/")) {
+    const parts = s.split("/").filter(Boolean);
+    mangaId = parts[0] || null;
+    chapterId = parts[1] || null;
+  } else {
+    const full = s.match(/\/read\/([^/]+)\/([^/?#]+)/i);
+    if (full) {
+      mangaId = full[1];
+      chapterId = full[2];
     }
-
-    if (!mangaId || !chapterId) {
-      throw new Error("Invalid chapter url format: " + s);
-    }
-
-    const apiUrl =
-      `${baseUrl}/api/read/chapter` +
-      `?mangaId=${encodeURIComponent(mangaId)}` +
-      `&chapterId=${encodeURIComponent(chapterId)}`;
-
-    const headers = {
-      "Accept": "*/*",
-      "Host": "atsu.moe",
-      "Referer": baseUrl,
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
-    };
-
-    const res = await this.client.get(apiUrl, headers);
-
-    let data;
-    try {
-      data = JSON.parse(res.body);
-    } catch (_) {
-      throw new Error("Failed to parse page list JSON");
-    }
-
-    const pages = Array.isArray(data?.readChapter?.pages) ? data.readChapter.pages : [];
-
-    return pages
-      .map(p => p?.image ? (baseUrl + String(p.image)) : null)
-      .filter(Boolean);
   }
+
+  if (!mangaId || !chapterId) {
+    throw new Error("Invalid chapter url format: " + s);
+  }
+
+  const apiUrl =
+    `${baseUrl}/api/read/chapter` +
+    `?mangaId=${encodeURIComponent(mangaId)}` +
+    `&chapterId=${encodeURIComponent(chapterId)}`;
+
+  const headers = {
+    "Accept": "*/*",
+    "Content-Type": "application/json",
+    "Referer": baseUrl,
+    "User-Agent":
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+  };
+
+  const res = await this.client.get(apiUrl, headers);
+
+  let data;
+  try {
+    data = JSON.parse(res.body);
+  } catch (_) {
+    throw new Error("Failed to parse page list JSON");
+  }
+
+  const pages = Array.isArray(data?.readChapter?.pages) ? data.readChapter.pages : [];
+
+  const fixImageUrl = (img) => {
+    if (!img) return null;
+    let imageUrl = String(img).trim();
+    if (!imageUrl) return null;
+
+    if (/^https?:\/\//i.test(imageUrl)) {
+    } else if (imageUrl.startsWith("//")) {
+      imageUrl = "https:" + imageUrl;
+    } else {
+      const p = imageUrl.replace(/^\/+/, "").replace(/^static\//i, "");
+      imageUrl = `${baseUrl}/static/${p}`;
+    }
+
+    imageUrl = imageUrl.replace(/^https?:\/\/?/i, "https://");
+    return imageUrl;
+  };
+
+  return pages
+    .map(p => fixImageUrl(p?.image))
+    .filter(Boolean);
+}
 
 
   getFilterList() {
